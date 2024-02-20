@@ -2,25 +2,20 @@ const express = require("express")
 const Products = require("../models/products")
 
 
-const getAllProducts = async(req, res, next)=>{
-    if(req.query.name){
-        const keyword = req.query.name;
-        try {
-            const products = await Products.find({ name: { $regex: keyword, $options: 'i' } });
-            res.status(200).json(products);
-        } catch (err) {
-            res.status(500).json({ message: err.message });
+const getAllProducts = async (req, res, next) => {
+    try {
+        if (req.query.name) {
+            const products = await Products.find({ name: { $regex: req.query.name, $options: 'i' } });
+            return res.status(200).json(products);
         }
-    }
-    try{
-        Products.find({}).then((products)=>{
-            res.status(200).send({message:"Products fetched successfully",data: products})
-        })
-    }
-    catch(error){
-        res.status(500).json(error.message)
+
+        const products = await Products.find({});
+        return res.status(200).send({ message: "Products fetched successfully", data: products });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
 }
+
 
 const getSingleProduct = async(req, res, next)=>{
     const productId = req.params.id
